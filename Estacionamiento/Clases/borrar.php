@@ -2,17 +2,12 @@
 
 header('Access-Control-Allow-Origin: *');
 
-include_once "./VehiculoDB.php";
+include_once "./Vehiculo.php";
 
 
     $patente = $_POST["patente"];
-  	
-    
-    $autoNuevo =  VehiculoDB::TraerUnVehiculo($patente);
-    echo($autoNuevo);
-    /*
-    $autoNuevo->BorrarVehiculo();
-    $autoNuevo->InsertarVehiculoHistorial();
-*/
+    $empleado = $_POST["email"];
 
-    echo("ok");
+    Vehiculo::borrar($patente,$empleado);
+
+

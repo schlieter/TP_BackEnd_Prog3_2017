@@ -1,19 +1,19 @@
 <?php
  header('Access-Control-Allow-Origin: *');
 
-include_once "./VehiculoDB.php";
+include_once "./Vehiculo.php";
 
+$autoNuevo = new Vehiculo();
 
-    $patente = $_POST["patente"];
-    $email = $_POST["email"];
-    $color = $_POST["color"];
-    $marca = $_POST["marca"];
+    $autoNuevo->patente = $_POST["patente"];
+    $autoNuevo->empleadoIngreso = $_POST["email"];
+    $autoNuevo->color = $_POST["color"];
+    $autoNuevo->marca = $_POST["marca"];
+    $autoNuevo->ingreso = date("Y/m/d H:i:s");
 
-    $autoNuevo = new VehiculoDB($patente,$marca,$color,$email);
+    $rta = $autoNuevo->Guardar();
+    echo($rta);
 
-    $autoNuevo->InsertarVehiculo();
-
-    echo("ok");
     
 
 
