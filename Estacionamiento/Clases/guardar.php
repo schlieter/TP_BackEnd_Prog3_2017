@@ -1,17 +1,18 @@
 <?php
  header('Access-Control-Allow-Origin: *');
 
-include_once "./Vehiculo.php";
+include_once "./Empleado.php";
 
-$autoNuevo = new Vehiculo();
+$empleado = new Empleado();
 
-    $autoNuevo->patente = $_POST["patente"];
-    $autoNuevo->empleadoIngreso = $_POST["email"];
-    $autoNuevo->color = $_POST["color"];
-    $autoNuevo->marca = $_POST["marca"];
-    $autoNuevo->ingreso = date("Y/m/d H:i:s");
+    $empleado->nombre = $_POST["nombre"];
+    $empleado->apellido = $_POST["apellido"];
+    $empleado->mail = $_POST["mail"];
+    $empleado->clave = $_POST["clave"];
+    $empleado->turno = $_POST["turno"];    
+    $empleado->ingreso = date("Y/m/d H:i:s");
 
-    $rta = $autoNuevo->Guardar();
+    $rta = $empleado->Guardar();
     echo($rta);
 
     

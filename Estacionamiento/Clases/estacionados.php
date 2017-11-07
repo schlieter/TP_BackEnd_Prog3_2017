@@ -1,9 +1,9 @@
 <?php
  header('Access-Control-Allow-Origin: *');
 
-include_once "./Vehiculo.php";
+include_once "./Empleado.php";
 
-$estacionados = Vehiculo::TodosLosEstacionados();
-foreach($estacionados as $var){
-    echo($var->patente."\n");
+$empleados = Empleado::TodosLosEmpleados();
+foreach($empleados as $var){
+    echo($var->ToString()."\n");
 }

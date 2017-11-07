@@ -104,4 +104,12 @@ class VehiculoDB{
 			$consulta->execute();			
 			return $consulta->fetchAll(PDO::FETCH_CLASS, "VehiculoDB");
 	}
+
+	public static function TraerHistorial()
+	{
+			$objetoAccesoDato = AccesoDatos::dameUnObjetoAcceso(); 
+			$consulta =$objetoAccesoDato->RetornarConsulta("select * from historial");
+			$consulta->execute();			
+			return $consulta->fetchAll(PDO::FETCH_CLASS, "VehiculoDB");
+	}
 }

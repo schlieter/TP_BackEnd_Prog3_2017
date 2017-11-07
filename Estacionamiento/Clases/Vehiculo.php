@@ -89,4 +89,8 @@ class Vehiculo{
         }
         return "El vehiculo no se encuentra estacionado";
     }
+
+    public function Historial(){
+        return VehiculoDB::TraerHistorial();
+    }
 }

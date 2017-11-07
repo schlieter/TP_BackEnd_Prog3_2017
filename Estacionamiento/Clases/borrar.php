@@ -2,12 +2,13 @@
 
 header('Access-Control-Allow-Origin: *');
 
-include_once "./Vehiculo.php";
+include_once "./Empleado.php";
 
 
-    $patente = $_POST["patente"];
-    $empleado = $_POST["email"];
+    $usuario = $_POST["usuario"];
+    $mail = $_POST["mail"];
 
-    Vehiculo::borrar($patente,$empleado);
+    $rta = Empleado::borrar($mail,$usuario);
+    echo($rta);
 
 
