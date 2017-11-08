@@ -1,5 +1,5 @@
 <?php
-include_once "./VehiculoDB.php";
+//require_once "./VehiculoDB.php";
 class Vehiculo{
 
     public $patente;
@@ -12,7 +12,7 @@ class Vehiculo{
     public $empleadoEgreso;
 
     public function VerificarPorPatente($patente){
-        $estacionados = $this->TodosLosEstacionados();
+        $estacionados = Vehiculo::TodosLosEstacionados();
         foreach($estacionados as $var){
             if($patente == $var->patente){
                 return 1;

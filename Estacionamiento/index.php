@@ -3,8 +3,14 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 require_once './vendor/autoload.php';
-require_once '/Clases/AccesoDatos.php';
-require_once '/Clases/Vehiculo.php';
+require_once './Clases/AccesoDatos.php';
+require_once './Clases/Vehiculo.php';
+include_once './Clases/Empleado.php';
+include_once './Clases/VehiculoDB.php';
+include_once './Clases/EmpleadoDB.php';
+include_once './Clases/MWparaAutentificar.php';
+include_once './Clases/AutentificadorJWT.php';
+
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
@@ -26,29 +32,14 @@ $app = new \Slim\App(["settings" => $config]);
 //require_once "saludo.php";
 
 
-$app->get('[/]', function (Request $request, Response $response) {    
-    $response->getBody()->write("GET => Bienvenido!!! ,a SlimFramework");
-    return $response;
 
-});
 
-$app->post('[/]', function (Request $request, Response $response) {   
+$app->post('/ingreso', function (Request $request, Response $response) {   
     $response->getBody()->write("POST => Bienvenido!!! ,a SlimFramework");
     return $response;
 
-});
+})->add(\MWparaAutentificar::class . ':VerificarUsuario');
 
-$app->put('[/]', function (Request $request, Response $response) {  
-    $response->getBody()->write("PUT => Bienvenido!!! ,a SlimFramework");
-    return $response;
-
-});
-
-$app->delete('[/]', function (Request $request, Response $response) {  
-    $response->getBody()->write(" DELETE => Bienvenido!!! ,a SlimFramework");
-    return $response;
-
-});
 
 
 
@@ -121,33 +112,55 @@ $app->group('/usuario/{id:[0-9]+}', function () {
 });
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*LLAMADA A METODOS DE INSTANCIA DE UNA CLASE*/
-$app->group('/cd', function () {   
+$app->group('/vehiculo', function () {
 
-$this->get('/', \cd::class . ':traerTodos');
-$this->get('/{id}', \cd::class . ':traerUno');
-$this->delete('/', \cd::class . ':BorrarUno');
+$this->get('[/]', function (Request $request, Response $response){
+    $estacionados = Vehiculo::TodosLosEstacionados();
+    foreach($estacionados as $var){
+        echo($var->ToString()."\n");
+    }
+});
+
+$this->delete('/',function(Request $request, Response $response){
+    $ArrayDeParametros = $request->getParsedBody();
+    $patente= $ArrayDeParametros['patente'];
+    $mail= $ArrayDeParametros['mail'];
+    Vehiculo::Borrar($patente,$mail);
+   
+
+});
+
+    
+
 $this->put('/', \cd::class . ':ModificarUno');
 //se puede tener funciones definidas
 /*SUBIDA DE ARCHIVO*/
-$this->post('/', function (Request $request, Response $response) {
+$this->post('/nuevo', function (Request $request, Response $response) {
   
     
     $ArrayDeParametros = $request->getParsedBody();
     //var_dump($ArrayDeParametros);
-    $titulo= $ArrayDeParametros['titulo'];
-    $cantante= $ArrayDeParametros['cantante'];
-    $año= $ArrayDeParametros['anio'];
-    
-    $micd = new cd();
-    $micd->titulo=$titulo;
-    $micd->cantante=$cantante;
-    $micd->año=$año;
-    $micd->InsertarElCdParametros();
+    $marca= $ArrayDeParametros['marca'];
+    $color= $ArrayDeParametros['color'];
+    $patente= $ArrayDeParametros['patente'];
+    $mail= $ArrayDeParametros['mail'];
 
-    $misCds = cd::TraerTodoLosCds();
+
+    $auto = new Vehiculo();
+    $auto->marca= $marca;
+    $auto->color= $color;
+    $auto->patente= $patente;
+    $auto->empleadoIngreso = $mail;
+    $auto->ingreso = date("Y/m/d H:i:s");
+    $rta = $auto->Guardar();
+
+    $response->getBody()->write($rta);
+    
+    return $response;
+    /*$misCds = cd::TraerTodoLosCds();
     
     foreach($misCds as $var){
         if($var->titulo == $micd->titulo && $var->cantante == $micd->cantante){
@@ -170,12 +183,14 @@ $this->post('/', function (Request $request, Response $response) {
     $archivos['foto']->moveTo($destino.$id.$titulo.".".$extension[0]);
     $response->getBody()->write("cd");
 
-    return $response;
+    return $response;*/
 
 });
 
      
-});
+})->add(\MWparaAutentificar::class . ':VerificarToken');
+
+
 
 
 $app->run();

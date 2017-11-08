@@ -1,5 +1,5 @@
 <?php
-include_once "./EmpleadoDB.php";
+//include_once "./EmpleadoDB.php";
 class Empleado{
 
     public $nombre;
@@ -8,6 +8,25 @@ class Empleado{
     public $clave;
     public $turno;
     public $ingreso;
+
+    public static function Ingreso($mail, $clave){
+        $empleados = Empleado::TodosLosEmpleados();
+        foreach($empleados as $var){
+            if($mail == $var->mail && $clave == $var->clave){
+                return "Acceso permitido";
+            }
+        }
+        return "Acceso denegado";
+    }
+    
+    public static function TraerUno($mail, $clave){
+        $empleados = Empleado::TodosLosEmpleados();
+        foreach($empleados as $var){
+            if($mail == $var->mail && $clave == $var->clave){
+                return $var;
+            }
+        }
+    }
 
     public function VerificarPorMail($mail){
         $empleados = Empleado::TodosLosEmpleados();
