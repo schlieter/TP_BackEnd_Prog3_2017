@@ -12,7 +12,7 @@ class Vehiculo{
     public $empleadoEgreso;
 
     public function VerificarPorPatente($patente){
-        $estacionados = $this->TodosLosEstacionados();
+        $estacionados = Vehiculo::TodosLosEstacionados();
         foreach($estacionados as $var){
             if($patente == $var->patente){
                 return 1;

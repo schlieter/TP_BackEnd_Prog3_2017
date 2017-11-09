@@ -8,7 +8,26 @@ class Empleado{
     public $clave;
     public $turno;
     public $ingreso;
+
+    public static function Ingreso($mail, $clave){
+        $empleados = Empleado::TodosLosEmpleados();
+        foreach($empleados as $var){
+            if($mail == $var->mail && $clave == $var->clave){
+                return "Acceso permitido";
+            }
+        }
+        return "Acceso denegado";
+    }
     
+    public static function TraerUno($mail, $clave){
+        $empleados = Empleado::TodosLosEmpleados();
+        foreach($empleados as $var){
+            if($mail == $var->mail && $clave == $var->clave){
+                return $var;
+            }
+        }
+    }
+
     public function VerificarPorMail($mail){
         $empleados = Empleado::TodosLosEmpleados();
         foreach($empleados as $var){
@@ -47,8 +66,8 @@ class Empleado{
 		return $this->nombre." ".$this->apellido." ".$this->turno." ".$this->mail." ".$this->ingreso;
 	}
 
-    public static function Borrar($mail,$usuario){
-        if($usuario == "admin@utn.com.ar"){
+    public static function Borrar($mail){
+        //if($usuario == "admin@utn.com.ar"){
             if(Empleado::VerificarPorMail($mail) == 0){
                 return "El empleado no se encuentra registrado";
             }
@@ -56,10 +75,10 @@ class Empleado{
             $empleadoDB = EmpleadoDB::TraerUnEmpleado($mail);
             $empleadoDB->BorrarEmpleado();
             return "ok";
-        }
+        /*}
         else{
             return "Usted no tiene permiso de administrador";
-        }
+        }                                                         ESTA VALIDACION SE REALIZA EN EL MIDD CON EL TOKEN*/
     }
 
     public function TodosLosEmpleados(){

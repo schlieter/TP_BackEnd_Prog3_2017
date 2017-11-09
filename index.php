@@ -8,6 +8,9 @@ require_once './Clases/Vehiculo.php';
 include_once './Clases/Empleado.php';
 include_once './Clases/VehiculoDB.php';
 include_once './Clases/EmpleadoDB.php';
+include_once './Clases/MWparaAutentificar.php';
+include_once './Clases/AutentificadorJWT.php';
+
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
@@ -29,29 +32,14 @@ $app = new \Slim\App(["settings" => $config]);
 //require_once "saludo.php";
 
 
-$app->get('[/]', function (Request $request, Response $response) {    
-    $response->getBody()->write("GET => Bienvenido!!! ,a SlimFramework");
+
+
+$app->post('/ingreso', function (Request $request, Response $response) {   
+    $response->getBody()->write("Bienvenido! ,al Estacionamiento");
     return $response;
 
-});
+})->add(\MWparaAutentificar::class . ':VerificarUsuario');
 
-$app->post('[/]', function (Request $request, Response $response) {   
-    $response->getBody()->write("POST => Bienvenido!!! ,a SlimFramework");
-    return $response;
-
-});
-
-$app->put('[/]', function (Request $request, Response $response) {  
-    $response->getBody()->write("PUT => Bienvenido!!! ,a SlimFramework");
-    return $response;
-
-});
-
-$app->delete('[/]', function (Request $request, Response $response) {  
-    $response->getBody()->write(" DELETE => Bienvenido!!! ,a SlimFramework");
-    return $response;
-
-});
 
 
 
@@ -112,22 +100,32 @@ $app->group('/saludo', function () {
 
 
 /* agrupacion de ruta y mapeado*/
-$app->group('/usuario/{id:[0-9]+}', function () {
+$app->group('/empleado', function () {
 
-    $this->map(['POST', 'DELETE'], '', function ($request, $response, $args) {
+    /*$this->map(['POST', 'DELETE'], '', function ($request, $response, $args) {
         $response->getBody()->write("Borro el usuario por p");
+    });*/
+
+    $this->get('[/]', function ($request, $response, $args) {
+        $empleados = Empleado::TodosLosEmpleados();
+        foreach($empleados as $var){
+            echo($var->ToString()."\n");
+        }    
     });
-
-    $this->get('/nombre', function ($request, $response, $args) {
-        $response->getBody()->write("Retorno el nombre del usuario del id ");
+    $this->delete('/borrar',function(Request $request, Response $response){///OK
+        $ArrayDeParametros = $request->getParsedBody();
+        $mail= $ArrayDeParametros['mail'];
+        return Empleado::Borrar($mail);
+       
+    
     });
-});
+})->add(\MWparaAutentificar::class . ':VerificarTokenParaUsuarioAdmin');// SOLO INGRESA A ESTA SESION EL ADMIN
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*LLAMADA A METODOS DE INSTANCIA DE UNA CLASE*/
-$app->group('/vehiculo', function () {   
+$app->group('/vehiculo', function () {
 
 $this->get('[/]', function (Request $request, Response $response){
     $estacionados = Vehiculo::TodosLosEstacionados();
@@ -135,15 +133,22 @@ $this->get('[/]', function (Request $request, Response $response){
         echo($var->ToString()."\n");
     }
 });
-/*$this->get('[/]', \Vehiculo::class . ':TodosLosEstacionados()');
 
+$this->delete('/',function(Request $request, Response $response){///OK
+    $ArrayDeParametros = $request->getParsedBody();
+    $patente= $ArrayDeParametros['patente'];
+    $mail= $ArrayDeParametros['mail'];
+    return Vehiculo::Borrar($patente,$mail);
+   
 
-$this->get('/{id}', \cd::class . ':traerUno');
-$this->delete('/', \cd::class . ':BorrarUno');
+});
+
+    
+
 $this->put('/', \cd::class . ':ModificarUno');
 //se puede tener funciones definidas
 /*SUBIDA DE ARCHIVO*/
-$this->post('/nuevo', function (Request $request, Response $response) {
+$this->post('/nuevo', function (Request $request, Response $response){
   
     
     $ArrayDeParametros = $request->getParsedBody();
@@ -193,7 +198,9 @@ $this->post('/nuevo', function (Request $request, Response $response) {
 });
 
      
-});
+})->add(\MWparaAutentificar::class . ':VerificarToken');
+
+
 
 
 $app->run();
