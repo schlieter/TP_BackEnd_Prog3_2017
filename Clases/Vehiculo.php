@@ -69,7 +69,8 @@ class Vehiculo{
         $autoDB->empleadoEgreso = $auto->empleadoEgreso;
         $autoDB->egreso = $auto->egreso;
         $autoDB->importe = $auto->importe;
-        $autoDB->InsertarVehiculo();
+        $autoDB->InsertarVehiculoHistorial();
+
         return "ok";
     }
 

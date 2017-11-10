@@ -50,9 +50,8 @@ $app->group('/empleado', function () {
         $empleado->mail= $ArrayDeParametros['mail'];
         $empleado->clave = $ArrayDeParametros["clave"];
         $empleado->ingreso = date("Y/m/d H:i:s");
-
-        $empleado->Guardar();
-        $rta = $auto->Guardar();
+        
+        $rta = $empleado->Guardar();
 
         $response->getBody()->write($rta);
         return $response;
@@ -109,18 +108,20 @@ $app->group('/vehiculo', function () {
         $autoModificar->empleadoIngreso = $ArrayDeParametros['mail'];
         $autoModificar->color = $ArrayDeParametros['color'];
         $autoModificar->marca = $ArrayDeParametros['marca'];
-        $autoModificar->Modificar();
+        $rta = $autoModificar->Modificar();
 
         $response->getBody()->write($rta);
         return $response;
 
     });
 
-    $this->delete('/borrar',function(Request $request, Response $response){///OK
+    $this->delete('/borrar',function(Request $request, Response $response){
         $ArrayDeParametros = $request->getParsedBody();
         $patente= $ArrayDeParametros['patente'];
         $mail= $ArrayDeParametros['mail'];
-        return Vehiculo::Borrar($patente,$mail);
+        $retorno = Vehiculo::Borrar($patente,$mail);
+        $response->getBody()->write($retorno);
+        return $response;
     });
 
     $this->post('/nuevo', function (Request $request, Response $response){
