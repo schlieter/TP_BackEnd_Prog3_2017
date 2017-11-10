@@ -69,7 +69,7 @@ class Vehiculo{
         $autoDB->empleadoEgreso = $auto->empleadoEgreso;
         $autoDB->egreso = $auto->egreso;
         $autoDB->importe = $auto->importe;
-        $autoDB->InsertarVehiculoHistorial();
+        $autoDB->InsertarVehiculo();
         return "ok";
     }
 
@@ -90,7 +90,7 @@ class Vehiculo{
         return "El vehiculo no se encuentra estacionado";
     }
 
-    public function Historial(){
+    public static function Historial(){
         return VehiculoDB::TraerHistorial();
     }
 }

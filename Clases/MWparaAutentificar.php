@@ -94,7 +94,7 @@ class MWparaAutentificar
 		}
 		catch(Exception $e){
 			$textoError="error ".$e->getMessage();
-			$error = array('tipo' => 'acceso','descripcion' => $textoError);			
+			$error = array('tipo' => 'acceso','descripcion' => $textoError);
 			$newResponse = $response->withJson( $error , 403);
 		}
 		return $newResponse;

@@ -18,6 +18,10 @@ class Empleado{
         }
         return "Acceso denegado";
     }
+
+    public function ToString(){
+		return $this->nombre." ".$this->apellido." ".$this->turno." ".$this->mail." ".$this->ingreso;
+	}
     
     public static function TraerUno($mail, $clave){
         $empleados = Empleado::TodosLosEmpleados();
@@ -61,44 +65,30 @@ class Empleado{
         $empleadoDB->InsertarEmpleado();
         return "OK";
     }
-    
-	public function ToString(){
-		return $this->nombre." ".$this->apellido." ".$this->turno." ".$this->mail." ".$this->ingreso;
-	}
 
     public static function Borrar($mail){
-        //if($usuario == "admin@utn.com.ar"){
-            if(Empleado::VerificarPorMail($mail) == 0){
-                return "El empleado no se encuentra registrado";
-            }
-            $empleadoDB = new EmpleadoDB();
-            $empleadoDB = EmpleadoDB::TraerUnEmpleado($mail);
-            $empleadoDB->BorrarEmpleado();
-            return "ok";
-        /*}
-        else{
-            return "Usted no tiene permiso de administrador";
-        }                                                         ESTA VALIDACION SE REALIZA EN EL MIDD CON EL TOKEN*/
+        if(Empleado::VerificarPorMail($mail) == 0){
+            return "El empleado no se encuentra registrado";
+        }
+        $empleadoDB = new EmpleadoDB();
+        $empleadoDB = EmpleadoDB::TraerUnEmpleado($mail);
+        $empleadoDB->BorrarEmpleado();
+        return "ok";
     }
 
     public function TodosLosEmpleados(){
         return EmpleadoDB::TraerTodosLosEmpleados();
     }
 
-    public function Modificar($usuario){
-        if($usuario == "admin@utn.com.ar"){
-            if($this->VerificarPorNombreApellido($this->nombre,$this->apellido) == 1){
-                $empleadoDB = new EmpleadoDB();
-                $empleadoDB = EmpleadoDB:: TraerUnEmpleadoNombreApellido($this->nombre,$this->apellido);
-                $empleadoDB->mail = $this->mail;
-                $empleadoDB->clave = $this->clave;
-                $empleadoDB->turno = $this->turno;
-                $empleadoDB->ModificarEmpleado();
-                return "ok";
-            }
-        }
-        else{
-            return "Usted no tiene permiso de administrador";            
+    public function Modificar(){
+        if($this->VerificarPorNombreApellido($this->nombre,$this->apellido) == 1){
+            $empleadoDB = new EmpleadoDB();
+            $empleadoDB = EmpleadoDB:: TraerUnEmpleadoNombreApellido($this->nombre,$this->apellido);
+            $empleadoDB->mail = $this->mail;
+            $empleadoDB->clave = $this->clave;
+            $empleadoDB->turno = $this->turno;
+            $empleadoDB->ModificarEmpleado();
+            return "ok";
         }
         return "El empleado no se encuentra registrado";
     }

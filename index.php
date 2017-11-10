@@ -15,28 +15,14 @@ include_once './Clases/AutentificadorJWT.php';
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
 
-/*
-
-¡La primera línea es la más importante! A su vez en el modo de 
-desarrollo para obtener información sobre los errores
- (sin él, Slim por lo menos registrar los errores por lo que si está utilizando
-  el construido en PHP webserver, entonces usted verá en la salida de la consola
-  que es útil).
-
-  La segunda línea permite al servidor web establecer el encabezado Content-Length, 
-  lo que hace que Slim se comporte de manera más predecible.
-*/
-
 $app = new \Slim\App(["settings" => $config]);
-
-//require_once "saludo.php";
 
 
 
 /*VERIFICO Y LE DEVUELVO EL TOKEN*/
 $app->post('/ingreso', function (Request $request, Response $response) {   
     return $response;
-})->add(\MWparaAutentificar::class . ':VerificarUsuario');
+})->add(\MWparaAutentificar::class.':VerificarUsuario');
 
 
 
@@ -44,54 +30,107 @@ $app->post('/ingreso', function (Request $request, Response $response) {
 $app->group('/empleado', function () {
 
     $this->get('[/]', function ($request, $response, $args) {
+        $retorno = "";
         $empleados = Empleado::TodosLosEmpleados();
+
         foreach($empleados as $var){
-            echo($var->ToString()."\n");
-        }    
+            $retorno.=$var->ToString()."\n";/////////////////////////////////////////////////////////////////
+            //echo($var->ToString()."\n");
+        }
+        //echo($retorno);
+        $response->getBody()->write($retorno);
+    });
+    $this->post('/nuevo', function (Request $request, Response $response){
+        $ArrayDeParametros = $request->getParsedBody();
+        $empleado = new Empleado();
+
+        $empleado->nombre= $ArrayDeParametros['nombre'];
+        $empleado->apellido= $ArrayDeParametros['apellido'];
+        $empleado->turno= $ArrayDeParametros['turno'];
+        $empleado->mail= $ArrayDeParametros['mail'];
+        $empleado->clave = $ArrayDeParametros["clave"];
+        $empleado->ingreso = date("Y/m/d H:i:s");
+
+        $empleado->Guardar();
+        $rta = $auto->Guardar();
+
+        $response->getBody()->write($rta);
+        return $response;
+    });
+    $this->put('/modificar',function(Request $request, Response $response){
+        $ArrayDeParametros = $request->getParsedBody();
+
+        $empleado = new Empleado();
+        $empleado->nombre = $ArrayDeParametros['nombre'];
+        $empleado->apellido = $ArrayDeParametros['apellido'];
+        $empleado->mail = $ArrayDeParametros['mail'];
+        $empleado->turno = $ArrayDeParametros['turno'];
+        $empleado->clave = $ArrayDeParametros["clave"];
+        $rta = $empleado->Modificar();
+
+        $response->getBody()->write($rta);
+        return $response;
+
     });
     $this->delete('/borrar',function(Request $request, Response $response){
         $ArrayDeParametros = $request->getParsedBody();
         $mail= $ArrayDeParametros['mail'];
         return Empleado::Borrar($mail);
     });
+
 })->add(\MWparaAutentificar::class . ':VerificarTokenParaUsuarioAdmin');
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /*GRUPO VEHICULO, tienen accesos todos los usuarios regristrados*/
 $app->group('/vehiculo', function () {
 
     $this->get('[/]', function (Request $request, Response $response){
+        $retorno = "";
         $estacionados = Vehiculo::TodosLosEstacionados();
         foreach($estacionados as $var){
-            echo($var->ToString()."\n");
+            $retorno.=$var->ToString()."\n";
         }
+        $response->getBody()->write($retorno);
+    });
+    $this->get('/historial', function (Request $request, Response $response){
+        $retorno = "";
+        $historial = Vehiculo::Historial();
+        foreach($historial as $var){
+            $retorno.=$var->ToString()."\n";
+        }
+        $response->getBody()->write($retorno);
     });
 
-    $this->delete('/',function(Request $request, Response $response){///OK
+    $this->put('/modificar',function(Request $request, Response $response){
+        $ArrayDeParametros = $request->getParsedBody();
+
+        $autoModificar = new Vehiculo();
+        $autoModificar->patente = $ArrayDeParametros['patente'];
+        $autoModificar->empleadoIngreso = $ArrayDeParametros['mail'];
+        $autoModificar->color = $ArrayDeParametros['color'];
+        $autoModificar->marca = $ArrayDeParametros['marca'];
+        $autoModificar->Modificar();
+
+        $response->getBody()->write($rta);
+        return $response;
+
+    });
+
+    $this->delete('/borrar',function(Request $request, Response $response){///OK
         $ArrayDeParametros = $request->getParsedBody();
         $patente= $ArrayDeParametros['patente'];
         $mail= $ArrayDeParametros['mail'];
         return Vehiculo::Borrar($patente,$mail);
-    
-
     });
 
     $this->post('/nuevo', function (Request $request, Response $response){
-
         $ArrayDeParametros = $request->getParsedBody();
-        $marca= $ArrayDeParametros['marca'];
-        $color= $ArrayDeParametros['color'];
-        $patente= $ArrayDeParametros['patente'];
-        $mail= $ArrayDeParametros['mail'];
-
 
         $auto = new Vehiculo();
-        $auto->marca= $marca;
-        $auto->color= $color;
-        $auto->patente= $patente;
-        $auto->empleadoIngreso = $mail;
+        $auto->marca= $ArrayDeParametros['marca'];
+        $auto->color= $ArrayDeParametros['color'];
+        $auto->patente= $ArrayDeParametros['patente'];
+        $auto->empleadoIngreso = $ArrayDeParametros['mail'];
         $auto->ingreso = date("Y/m/d H:i:s");
         $rta = $auto->Guardar();
 
@@ -122,7 +161,6 @@ $app->group('/vehiculo', function () {
         $response->getBody()->write("cd");
 
         return $response;*/
-
     });
 
 })->add(\MWparaAutentificar::class . ':VerificarToken');
